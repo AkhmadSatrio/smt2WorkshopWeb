@@ -1,8 +1,16 @@
 var express = require('express');
 const connection = require('../config/database');
 var router = express.Router();
+const model_kategori = require('../model/model_kategori');
 
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
+    let rows = await model_kategori.getAll();
+        res.render('kategori/index', {
+            judul : 'Halaman Kategori',
+            data: rows
+        });
+
+    /*
     connection.query('select * from Kategori order by id_kategori desc', function(err, rows) {
         if(err){
             req.flash('error', err);
@@ -13,40 +21,34 @@ router.get('/', function(req, res, next) {
             });
             }
         });
+
+        */
     });
+    
+
 
     router.get('/create', function(req, res, next){
         res.render('kategori/create');
     })
 
-    router.get('/edit/(:id)', function(req, res, next){
+    router.get('/edit/(:id)', async function(req, res, next){
         let id = req.params.id;
-        connection.query('select * from Kategori where id_kategori = ' + id, function(err, rows){
-            if (err) {
-                req.flash("error", 'Gagal memuat Data');
-            } else {
-                res.render('kategori/edit', {
+        let rows = await model_kategori.getId(id);
+         res.render('kategori/edit', {
                     id: rows[0].id_kategori, 
                     nama_kategori: rows[0].nama_kategori 
                 });
-            }
-        })
     })
 
-    router.post('/store', function(req, res, next){
+    router.post('/store', async function(req, res, next){
         try {
             let {nama_kategori} = req.body;
             let Data = {
                 nama_kategori
             }
-            connection.query('insert into Kategori set?', Data, function(err, result){
-                if (err) {
-                    req.flash('error', 'Gagal Menyimpan Data');
-                } else {
-                    req.flash('success', 'Berhasil Menginput Data');
-                }
-                res.redirect('/kategori');
-            })
+            await model_kategori.Store(Data);
+            req.flash('success', 'Berhasil Menginput Data');
+            res.redirect('/kategori');
         } catch (error) {
             req.flash('error', 'Terjadi Kesalahan');
             res.redirect('/kategori');
@@ -54,21 +56,16 @@ router.get('/', function(req, res, next) {
         }
     })
     
-    router.post('/update/(:id)', function(req, res, next){
+    router.post('/update/(:id)', async function(req, res, next){
         try {
             let id = req.params.id;
             let {nama_kategori} = req.body;
             let Data = {
                 nama_kategori
             }
-            connection.query('update kategori set? where id_kategori = '+ id, Data, function(err, result){
-                if (err) {
-                    req.flash('error', 'Gagal Menyimpan Data');
-                } else {
-                    req.flash('success', 'Berhasil Menginput Data');
-                }
-                res.redirect('/kategori');
-            })
+            await model_kategori.Update(id, Data);
+            req.flash('success', 'Berhasil Menginput Data');
+            res.redirect('/kategori');
         } catch (error) {
             req.flash('error', 'Terjadi Kesalahan');
             res.redirect('/kategori');
@@ -76,16 +73,11 @@ router.get('/', function(req, res, next) {
         }
     })
 
-    router.get('/delete/(:id', function(req, res) {
+    router.get('/delete/(:id)', async function(req, res) {
         let id = req.params.id;
-        connection.query('delete from Kategori where id_kategori = ' + id, function(err){
-            if (err) {
-                req.flash('error', 'Gagal Menghapus data');
-            } else {
-                req.flash('success', 'Data terhapus');
-            }
-            res.redirect('/kategori');
-        })
+        await model_kategori.Delete(id);
+        req.flash('success', 'Data terhapus');
+        res.redirect('/kategori');
     })
 
 module.exports = router;
