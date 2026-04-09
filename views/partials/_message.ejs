@@ -1,0 +1,10 @@
+ <% if (messages.success) { %>
+            <div class="alert alert-success timeOut">
+                <i class="bi bi-check-circle"></i> <%- messages.success %>
+            </div>
+        <% } %>
+        <% if (messages.error) { %>
+            <div class="alert alert-danger timeOut">
+                <i class="bi bi-exclamation-triangle"></i> <%- messages.error %>
+            </div>
+        <% } %>

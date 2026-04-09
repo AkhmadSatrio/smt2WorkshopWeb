@@ -3,6 +3,22 @@ const connection = require('../config/database');
 var router = express.Router();
 const model_produk = require('../model/model_produk');
 
+const fs = require('fs');
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/images')
+    },
+    filename: (req, file, cb) => {
+        console.log(file)
+        cb(null, Date.now() + path.extname(file.originalname))
+    }
+})
+
+const upload = multer({storage : storage});
+
 router.get('/', async function(req, res, next) {
     let rows = await model_produk.getAll();
     res.render('produk/index', {
@@ -47,11 +63,12 @@ router.get('/edit/(:id)', function(req, res, next){
         }
     });
 });
-
-router.post('/store', async function(req, res, next){
+router.post('/store', upload.single("gambar_produk"), async function(req, res, next){
     try {
         let { nama_produk, harga, id_kategori } = req.body;
-        let Data = { nama_produk, harga, id_kategori };
+        let gambar_produk = req.file ? req.file.filename : null;
+        let Data = { nama_produk, harga, id_kategori, gambar_produk };
+
         await model_produk.Store(Data);
         req.flash('success', 'Berhasil Menginput Data');
         res.redirect('/produk');
@@ -62,11 +79,27 @@ router.post('/store', async function(req, res, next){
     }
 });
 
-router.post('/update/(:id)', async function(req, res, next){
+router.post('/update/:id', upload.single("gambar_produk"), async function(req, res, next){
     try {
         let id = req.params.id;
+        let filebaru = req.file ? req.file.filename : null;
+
+        let rows = await model_produk.getId(id);
+        const namafilelama = rows[0].gambar_produk;
+
         let { nama_produk, harga, id_kategori } = req.body;
         let Data = { nama_produk, harga, id_kategori };
+
+        if (filebaru) {
+            if (namafilelama) {
+                const pathfilelama = path.join(__dirname, '../public/images', namafilelama);
+                if (fs.existsSync(pathfilelama)) {
+                    fs.unlinkSync(pathfilelama);
+                }
+            }
+            Data.gambar_produk = filebaru;
+        }
+
         await model_produk.Update(id, Data);
         req.flash('success', 'Berhasil Mengupdate Data');
         res.redirect('/produk');
@@ -77,8 +110,15 @@ router.post('/update/(:id)', async function(req, res, next){
     }
 });
 
+
 router.get('/delete/(:id)', async function(req, res) {
     let id = req.params.id;
+    let rows = await model_produk.getId(id);
+    const namafilelama = rows[0].gambar_produk;
+    if(namafilelama) {
+       const pathfilelama = path.join(__dirname, '../public/images', namafilelama);
+                    fs.unlinkSync(pathfilelama); 
+    }
     await model_produk.Delete(id);
     req.flash('success', 'Data terhapus');
     res.redirect('/produk');

@@ -2,18 +2,20 @@ const connection = require('../config/database');
 
 class model_produk {
 
-    static async getAll(){
-        return new Promise((resolve, reject) => {
-            connection.query(
-                'SELECT * FROM produk ORDER BY id_produk DESC',
-                (err, result) => {
-                    if (err) reject(err);
-                    else resolve(result);
-                }
-            );
-        });
-    }
-
+   static async getAll(){
+    return new Promise((resolve, reject) => {
+        connection.query(
+            `SELECT p.id_produk, p.nama_produk, p.harga, p.gambar_produk, k.nama_kategori
+             FROM produk p
+             LEFT JOIN kategori k ON p.id_kategori = k.id_kategori
+             ORDER BY p.id_produk DESC`,
+            (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+            }
+        );
+    });
+}
     static async Store(Data) {
         return new Promise((resolve, reject) => {
             connection.query(

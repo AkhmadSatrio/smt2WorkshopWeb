@@ -13,6 +13,7 @@ var mbgRouter = require('./routes/mbg');
 var kipkRouter = require('./routes/kipk');
 var kategoriRouter = require('./routes/kategori');
 var produkRouter = require('./routes/produk');
+var mahasiswaRouter = require('./routes/mahasiswa');
 
 
 var app = express();
@@ -20,6 +21,9 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use('/static', express.static(path.join(__dirname, 'public/images')));
+
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -45,6 +49,7 @@ app.use('/mbg', mbgRouter);
 app.use('/kipk', kipkRouter);
 app.use('/kategori', kategoriRouter)
 app.use('/produk', produkRouter);
+app.use('/mahasiswa', mahasiswaRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
