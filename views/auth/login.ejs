@@ -1,0 +1,24 @@
+<a href="/kategori/create" class="btn btn-sm btn-secondary mb-3">← Back</a>
+
+<div class="card shadow-sm">
+  <div class="card-header bg-primary text-white">
+    <h5 class="mb-0">Login User</h5>
+  </div>
+  <div class="card-body">
+    <form action="/log" method="post">
+      <div class="mb-3">
+        <label class="form-label fw-bold">Email</label>
+        <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-bold">Password</label>
+        <input type="password" class="form-control" name="password" placeholder="Enter a secure password" required>
+      </div>
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/_foot') %>

@@ -2,28 +2,28 @@ var express = require('express');
 const connection = require('../config/database');
 var router = express.Router();
 const model_kategori = require('../model/model_kategori');
+const model_users = require('../model/model_users');
 
 router.get('/', async function(req, res, next) {
+    try {
+    let id = req.session.userId;
+    let Data = await model_users.getId(id);
     let rows = await model_kategori.getAll();
-        res.render('kategori/index', {
-            judul : 'Halaman Kategori',
-            data: rows
-        });
-
-    /*
-    connection.query('select * from Kategori order by id_kategori desc', function(err, rows) {
-        if(err){
-            req.flash('error', err);
-        } else {
-            res.render('kategori/index', {
-                judul: 'Halaman Kategori',
-                data: rows
-            });
-            }
-        });
-
-        */
+  if (Data.length > 0) {
+    res.render('kategori/index', {
+      email : Data[0].email,
+      data : rows,
+      judul : 'User Page'
     });
+  } else {
+    req.flash('error', 'Session berakhir');
+    res.redirect('/login');
+  }
+    } catch (error) {
+    req.flash('error', 'Butuh akses Login');
+    res.redirect('/login');
+    }
+});
     
 
 

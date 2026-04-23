@@ -7,6 +7,8 @@ var logger = require('morgan');
 var flash = require('express-flash');
 var session = require('express-session');
 
+const MemoryStore = require("session-memory-store")(session);
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var mbgRouter = require('./routes/mbg');
@@ -33,7 +35,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
   cookie: {
-    maxAge: 6000
+    maxAge: 60000000,
+    httpOnly: true,
+    sameSite: 'strict'
   },
   store: new session.MemoryStore,
   saveUninitialized: true,
