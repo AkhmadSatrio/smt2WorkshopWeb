@@ -1,5 +1,7 @@
 var createError = require('http-errors');
 var express = require('express');
+var dotenv = require('dotenv');
+dotenv.config();
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -16,6 +18,10 @@ var kipkRouter = require('./routes/kipk');
 var kategoriRouter = require('./routes/kategori');
 var produkRouter = require('./routes/produk');
 var mahasiswaRouter = require('./routes/mahasiswa');
+var ApiKategoriRouter = require('./routes/api/kategori');
+var ApiProdukRouter = require('./routes/api/produk');
+var registerRouter = require('./routes/auth/register');
+var loginRouter = require('./routes/auth/login');
 
 
 var app = express();
@@ -54,6 +60,10 @@ app.use('/kipk', kipkRouter);
 app.use('/kategori', kategoriRouter)
 app.use('/produk', produkRouter);
 app.use('/mahasiswa', mahasiswaRouter);
+app.use('/api/kategori', ApiKategoriRouter);
+app.use('/api/produk', ApiProdukRouter);
+app.use('/api/register', registerRouter);
+app.use('/api/login', loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

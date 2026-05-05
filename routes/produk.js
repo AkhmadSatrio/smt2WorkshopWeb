@@ -6,6 +6,7 @@ const model_produk = require('../model/model_produk');
 const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
+const model_users = require('../model/model_users');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -20,11 +21,24 @@ const storage = multer.diskStorage({
 const upload = multer({storage : storage});
 
 router.get('/', async function(req, res, next) {
-    let rows = await model_produk.getAll();
-    res.render('produk/index', {
-        judul : 'Halaman Produk',
-        data: rows
-    });
+    try {
+        let id = req.session.userId;
+        let Data = await model_users.getId(id);
+        let rows = await model_produk.getAll();
+    if (Data.length > 0) {
+        res.render('produk/index', {
+            email : Data[0].email,
+            judul : 'Halaman Produk',
+            data: rows
+        });
+    } else {
+        req.flash('error', 'Session Berakhir');
+        res.redirect('/login');
+    }
+    } catch (error) {
+        req.flash('error', 'Butuh akses Login');
+        res.redirect('/login');
+    }
 });
 
 router.get('/create', function(req, res, next){

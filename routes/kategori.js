@@ -3,6 +3,7 @@ const connection = require('../config/database');
 var router = express.Router();
 const model_kategori = require('../model/model_kategori');
 const model_users = require('../model/model_users');
+var verifyToken = require('../config/middleware/jwt');
 
 router.get('/', async function(req, res, next) {
     try {
