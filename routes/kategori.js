@@ -18,11 +18,11 @@ router.get('/', async function(req, res, next) {
     });
   } else {
     req.flash('error', 'Session berakhir');
-    res.redirect('/login');
+    res.redirect('/login?returnTo=' + encodeURIComponent(req.originalUrl));
   }
     } catch (error) {
     req.flash('error', 'Butuh akses Login');
-    res.redirect('/login');
+    res.redirect('/login?returnTo=' + encodeURIComponent(req.originalUrl));
     }
 });
     

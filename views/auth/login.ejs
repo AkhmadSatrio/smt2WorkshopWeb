@@ -5,20 +5,24 @@
     <h5 class="mb-0">Login User</h5>
   </div>
   <div class="card-body">
-    <form action="/log" method="post">
-      <div class="mb-3">
-        <label class="form-label fw-bold">Email</label>
-        <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label fw-bold">Password</label>
-        <input type="password" class="form-control" name="password" placeholder="Enter a secure password" required>
-      </div>
-      <div class="d-grid">
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </div>
-    </form>
-  </div>
+      <%- include('../partials/_message') %>
+      <form action="/log" method="post">
+        <input type="hidden" name="returnTo" value="<%= returnTo %>">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Email</label>
+          <input type="email" class="form-control" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Password</label>
+          <input type="password" class="form-control" name="password" placeholder="Enter your password" required>
+        </div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+      </form>
+    </div>
 </div>
+
+<a href="/register" class="d-block mt-3">Buat Akun</a>
 
 <%- include('../partials/_foot') %>

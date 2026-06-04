@@ -17,7 +17,9 @@ router.get('/informasi', function(req, res, next) {
 });
 
 router.get('/login', function(req, res, next) {
-  res.render('auth/login')
+  res.render('auth/login', {
+    returnTo: req.query.returnTo || ''
+  })
 });
 
 router.get('/register', function(req, res, next) {
@@ -37,27 +39,32 @@ router.post('/saveusers', async (req, res, next) => {
 }); 
 
 router.post('/log', async (req, res, next) => {
-  let {email, password} = req.body;
+  let { email, password, returnTo } = req.body;
+  const redirectToLogin = (message) => {
+    req.flash('error', message);
+    const target = returnTo ? `/login?returnTo=${encodeURIComponent(returnTo)}` : '/login';
+    res.redirect(target);
+  };
+
   try {
     let Data = await model_users.Login(email);
-    if (Data.length > 0) {
-      let enkripsi = Data[0].password;
+    if (Data) {
+      let enkripsi = Data.password;
       let cek = await bcrypt.compare(password, enkripsi);
       if (cek) {
-        req.session.userId = Data[0].id_users;
+        req.session.userId = Data.id_users;
         req.flash('success', 'Berhasil Login');
-        res.redirect('/users');
+        const destination = returnTo && returnTo !== '' ? returnTo : '/users';
+        return res.redirect(destination);
       } else {
-        req.flash('error', 'Password Salah');
-        res.redirect('/login');
+        return redirectToLogin('Password Salah');
       }
     } else {
-      req.flash('error', 'Email Tidak Ditemukan');
-      res.redirect('/login');
+      return redirectToLogin('Email Tidak Ditemukan');
     }
   } catch (error) {
-    req.flash('error', 'Terjadi kesalahan pada fungsi');
-    res.redirect('/login');
+    console.error(error);
+    return redirectToLogin('Terjadi kesalahan pada fungsi');
   }
 });
 

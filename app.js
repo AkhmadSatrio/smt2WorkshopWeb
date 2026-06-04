@@ -10,6 +10,8 @@ var flash = require('express-flash');
 var session = require('express-session');
 
 const MemoryStore = require("session-memory-store")(session);
+const cors = require('cors');
+const { onlyDomain } = require('./config/middleware/corsOption');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -32,12 +34,12 @@ app.set('view engine', 'ejs');
 
 app.use('/static', express.static(path.join(__dirname, 'public/images')));
 
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors(onlyDomain));
 
 app.use(session({
   cookie: {
